@@ -9,7 +9,6 @@ import ModeToggle from '@/components/ModeToggle';
 import { fetchPlaylistItems } from '@/lib/youtube';
 import { Button } from '@/components/ui/button';
 import { createVideo, getVideoById } from '@/actions/video.action';
-import { fetchCaptions } from '@/lib/captions';
 
 interface PlaylistItem {
   id: string;

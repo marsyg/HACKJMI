@@ -22,6 +22,9 @@ export default function PlayerPage() {
   const [isLoading, setIsLoading] = useState(true);
   const { data: session, status } = useSession();
   const [captions, setCaptions] = useState('');
+  const handleNote = async (videoId: string) => {
+    router.push(`/YTNotes/${videoId}`);
+  };
   const handleQuiz = async (videoId: string) => {
     router.push(`/quiz/${videoId}`);
   };
@@ -145,6 +148,7 @@ export default function PlayerPage() {
         {videoId ? (
           <div>
             <Button onClick={() => handleQuiz(videoId)}>Start Quiz</Button>
+            <Button onClick={() => handleNote(videoId)}>Notes </Button>
             <VideoPlayer videoId={videoId} />
           </div>
         ) : (
@@ -199,7 +203,6 @@ import { Mic, Edit } from 'lucide-react';
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { getCaptions } from '@dofy/youtube-caption-fox';
-import { fetchCaptions } from '@/lib/captions';
 
 const NotesEditor = () => {
   const [notes, setNotes] = useState('');

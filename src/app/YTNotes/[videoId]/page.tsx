@@ -1,8 +1,14 @@
+'use client';
 import { fetchCaptions } from '@/lib/captions';
 import { generateContent } from '@/lib/gemini';
 import { notes_prompt } from '@/prompts/prompts';
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Loader2, LogOut, BookOpen } from 'lucide-react';
+import { ModeToggle } from '@/components/mode-toggle';
+import { useSession, signIn, signOut } from 'next-auth/react';
 
 type Note = {
   start_time: string;
@@ -10,55 +16,121 @@ type Note = {
   detailed_explanation: string;
 };
 
-type NotesProps = {
-  notes: Note[];
-};
-
-const NotesList: React.FC<NotesProps> = async () => {
+const NotesList: React.FC = () => {
+  const { data: session } = useSession();
   const [captions, setCaptions] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const [noteData, setNoteData] = useState<Note[]>([]);
   const params = useParams();
-  console.log(params);
   const videoId = params.videoId;
 
   useEffect(() => {
-    fetchCaptions(videoId).then((captions) => {
-      setCaptions(captions);
-      setLoading(false);
-    });
-  }, []);
+    const loadData = async () => {
+      try {
+        const captionsData = await fetchCaptions(videoId);
+        setCaptions(captionsData);
 
-  if (!loading) console.log(captions);
+        const prompt = `${notes_prompt}: ${JSON.stringify(captionsData)}`;
+        const response = await generateContent(prompt);
 
-  const jsonString = JSON.stringify(captions);
+        const rawData = JSON.parse(response.response.text() || '[]');
+        const transformedData = rawData.map((item: any) => ({
+          start_time: item['Start Time']?.toString() || '',
+          duration: item.Duration?.toString() || '',
+          detailed_explanation: item['Detailed Explanation'] || '',
+        }));
 
-  const prompt = `${notes_prompt}: ${jsonString}`;
+        setNoteData(transformedData);
+      } catch (error) {
+        console.error('Error loading notes:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const content = await generateContent(prompt);
-
-  const parsedContent = JSON.parse(content.response.text());
-
-  console.log('content:', parsedContent);
+    if (session) loadData();
+  }, [videoId, session]);
 
   return (
-    <div className="p-6 bg-gray-100 rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-4">Extracted Notes</h2>
-      <ul className="space-y-4">
-        {notes.map((note, index) => (
-          <li key={index} className="p-4 bg-white rounded-lg shadow">
-            <p className="text-gray-700">
-              <strong>Start Time:</strong> {note.start_time}
-            </p>
-            <p className="text-gray-700">
-              <strong>Duration:</strong> {note.duration}
-            </p>
-            <p className="text-gray-900 mt-2">
-              <strong>Explanation:</strong> {note.detailed_explanation}
-            </p>
-          </li>
-        ))}
-      </ul>
+    <div className="max-w-7xl mx-auto min-h-screen p-8">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold flex items-center gap-2">
+          <BookOpen className="w-6 h-6 text-green-500" />
+          Video Notes
+        </h1>
+        <div className="flex items-center gap-4">
+          <ModeToggle />
+          {session && (
+            <Button
+              onClick={() => signOut()}
+              variant="destructive"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <LogOut className="w-4 h-4" />
+              Sign Out
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {!session ? (
+        <Card className="max-w-md mx-auto mt-20">
+          <CardHeader className="text-center">
+            <CardTitle className="flex items-center justify-center gap-2">
+              <BookOpen className="w-6 h-6 text-green-500" />
+              Sign in to View Notes
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex justify-center p-6">
+            <Button
+              onClick={() => signIn('google')}
+              className="flex items-center gap-2"
+            >
+              Sign in with Google
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl flex items-center gap-2">
+              <BookOpen className="w-6 h-6 text-green-500" />
+              Generated Notes
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
+                Generating notes from video content...
+              </div>
+            ) : noteData.length > 0 ? (
+              <div className="grid grid-cols-1 gap-6">
+                {noteData.map((note, index) => (
+                  <Card key={index} className="p-4 bg-muted/50">
+                    <div className="flex justify-between text-sm mb-2">
+                      <span className="text-muted-foreground">
+                        Start: {note.start_time}s
+                      </span>
+                      <span className="text-muted-foreground">
+                        Duration: {note.duration}s
+                      </span>
+                    </div>
+                    <p className="text-foreground">
+                      {note.detailed_explanation}
+                    </p>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                No notes generated for this video.
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

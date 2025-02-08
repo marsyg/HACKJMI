@@ -1,9 +1,6 @@
 import { getCaptions } from '@dofy/youtube-caption-fox';
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { generateContent } from '@/lib/gemini';
-import { notes_prompt } from '@/prompts/prompts';
-import { json } from 'stream/consumers';
 
 export const GET = async (req: NextRequest) => {
   const searchParams = req.nextUrl.searchParams;
@@ -21,7 +18,7 @@ export const GET = async (req: NextRequest) => {
   try {
     // Fetch captions from YouTube
     const { captions } = await getCaptions(videoId);
-   
+
     console.log('captions:', captions);
     // const prompt = `${notes_prompt}: ${jsonString}`;
 
@@ -66,12 +63,7 @@ export const GET = async (req: NextRequest) => {
       );
 
       console.log('Upserted captions:', saveCaption.length);
-      return NextResponse.json({
-        message: 'Captions processed',
-        capation : captions,
-        
-        count: saveCaption.length,
-      });
+      return NextResponse.json(captions);
     }
 
     return NextResponse.json({ message: 'No captions available' });
