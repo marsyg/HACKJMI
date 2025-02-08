@@ -1,14 +1,41 @@
 'use client';
 
-import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Progress } from '@/components/ui/progress';
 import { CheckCircle, XCircle, Smile } from 'lucide-react';
-import {question_prompt} from '@/prompts/prompts'
+import { useParams } from 'next/navigation';
+import { fetchCaptions } from '@/lib/captions';
+import { question_prompt } from '@/prompts/prompts';
+import { useEffect, useState } from 'react';
 
 export default function QuizParticipant() {
+  const [captions, setCaptions] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const params = useParams();
+  console.log(params);
+  const videoId = params.videoId;
+  useEffect(() => {
+    fetchCaptions(videoId).then((captions) => {
+      setCaptions(captions);
+      setLoading(false);
+    });
+  }, []);
+
+  if (!loading) console.log(captions);
+
+  // const captions = fetchCaptions(videoId);
+  // const jsonString = JSON.stringify(captions);
+  // const prompt = `${question_prompt}: ${jsonString}`;
+
+  // console.log('captions:', jsonString);
+  // // console.log('captions:', captions);
+  // const content = await generateContent(prompt);
+  // const parsedContent = JSON.parse(content.response.text());
+  // console.log('content:', parsedContent);
+
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   const [showResult, setShowResult] = useState(false);

@@ -1,5 +1,5 @@
 'use client';
-import axios from 'axios';
+
 import { useCallback, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useSession, signIn } from 'next-auth/react';
@@ -22,9 +22,8 @@ export default function PlayerPage() {
   const [isLoading, setIsLoading] = useState(true);
   const { data: session, status } = useSession();
   const [captions, setCaptions] = useState('');
-  const handleQuiz = (videoId) => {
-    router.push('/quiz');
-    fetchCaptions(videoId);
+  const handleQuiz = async (videoId: string) => {
+    router.push(`/quiz/${videoId}`);
   };
   // const fetchCaptions = async (videoId: string) => {
   //   try {

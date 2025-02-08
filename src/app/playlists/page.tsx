@@ -114,10 +114,8 @@ export default function Home() {
     if (video === null) {
       console.log('Creating video:', videoData);
       await createVideo({ data: videoData });
-      console.log('Fetching captions for video:', videoId);
-      await fetchCaptions({ videoId: videoId });
     }
-    await fetchCaptions({ videoId: videoId });
+
     router.push(`/player?videoId=${videoId}`);
   };
 

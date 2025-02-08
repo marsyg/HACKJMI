@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { generateContent } from '@/lib/gemini';
 import { notes_prompt } from '@/prompts/prompts';
+import { json } from 'stream/consumers';
 
 export const GET = async (req: NextRequest) => {
   const searchParams = req.nextUrl.searchParams;
@@ -20,15 +21,15 @@ export const GET = async (req: NextRequest) => {
   try {
     // Fetch captions from YouTube
     const { captions } = await getCaptions(videoId);
-    const jsonString = JSON.stringify(captions);
+   
+    console.log('captions:', captions);
+    // const prompt = `${notes_prompt}: ${jsonString}`;
 
-    const prompt = `${notes_prompt}: ${jsonString}`;
-
-    console.log('captions:', jsonString);
-    // console.log('captions:', captions);
-    const content = await generateContent(prompt);
-    const parsedContent = JSON.parse(content.response.text());
-    console.log('content:', parsedContent);
+    // console.log('captions:', jsonString);
+    // // console.log('captions:', captions);
+    // const content = await generateContent(prompt);
+    // const parsedContent = JSON.parse(content.response.text());
+    // console.log('content:', parsedContent);
     if (captions.length > 0) {
       const video = await prisma.video.findUnique({
         where: { videoId: videoId },
@@ -67,6 +68,8 @@ export const GET = async (req: NextRequest) => {
       console.log('Upserted captions:', saveCaption.length);
       return NextResponse.json({
         message: 'Captions processed',
+        capation : captions,
+        
         count: saveCaption.length,
       });
     }
