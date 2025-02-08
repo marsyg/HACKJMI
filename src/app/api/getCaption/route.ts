@@ -23,6 +23,7 @@ export const GET = async (req: NextRequest) => {
     if (captions.length > 0) {
       const video = await prisma.video.findUnique({
         where: { videoId: videoId },
+        select: { id: true },
       });
       console.log('video from fetchCaptions:', video);
       if (!video) {
@@ -38,7 +39,7 @@ export const GET = async (req: NextRequest) => {
           prisma.caption.upsert({
             where: {
               videoId_startTime: {
-                videoId: videoId,
+                videoId: video.id,
                 startTime: caption.start,
               },
             },
@@ -46,7 +47,7 @@ export const GET = async (req: NextRequest) => {
               content: caption.text,
             },
             create: {
-              videoId: videoId,
+              videoId: video.id,
               startTime: caption.start,
               content: caption.text,
             },
