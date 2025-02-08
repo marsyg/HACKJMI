@@ -24,7 +24,7 @@ export const GET = async (req: NextRequest) => {
       const video = await prisma.video.findUnique({
         where: { videoId: videoId },
       });
-      console.log('video from fetchCaptions:', video);
+
       if (!video) {
         return NextResponse.json(
           { error: 'Video not found from getCaption' },
