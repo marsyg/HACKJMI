@@ -25,7 +25,7 @@ export const GET = async (req: NextRequest) => {
         where: { videoId: videoId },
         select: { id: true },
       });
-      console.log('video from fetchCaptions:', video);
+
       if (!video) {
         return NextResponse.json(
           { error: 'Video not found from getCaption' },
