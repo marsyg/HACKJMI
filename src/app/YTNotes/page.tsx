@@ -1,1 +1,0 @@
-import {notes_prompt} from "@/prompts/prompts"
