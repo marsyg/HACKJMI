@@ -25,6 +25,9 @@ export default function PlayerPage() {
   const handleNote = async (videoId: string) => {
     router.push(`/YTNotes/${videoId}`);
   };
+  const handleChat = async () => {
+    router.push(`/chat`);
+  };
   const handleQuiz = async (videoId: string) => {
     router.push(`/quiz/${videoId}`);
   };
@@ -146,10 +149,22 @@ export default function PlayerPage() {
     <div className="flex flex-col lg:flex-row gap-6 p-6 bg-background min-h-screen">
       <div className="lg:w-3/4">
         {videoId ? (
-          <div>
-            <Button onClick={() => handleQuiz(videoId)}>Start Quiz</Button>
-            <Button onClick={() => handleNote(videoId)}>Notes </Button>
+          <div className="flex flex-col">
             <VideoPlayer videoId={videoId} />
+            <div className=" flex justify-end w-full m-2 p-2  ">
+              <Button
+                className="h-12 mr-2 text-xl font-bold"
+                onClick={() => handleNote(videoId)}
+              >
+                Notes
+              </Button>
+              <Button
+                className="mr-2 h-12 text-xl font-bold "
+                onClick={() => handleQuiz(videoId)}
+              >
+                Start Quiz
+              </Button>
+            </div>
           </div>
         ) : (
           <Card className="p-6">
@@ -160,6 +175,9 @@ export default function PlayerPage() {
         )}
         <div className="mt-6">
           <NotesEditor />
+          <Button className="m-2" onClick={() => handleChat()}>
+            Chat
+          </Button>
         </div>
       </div>
       <div className="lg:w-1/4">
