@@ -1,7 +1,7 @@
-QuizBee 🐝: Interactive Quiz Platform
+QuizPlay 🐝: Interactive Quiz Platform
 Buzz your way to smarter learning! 🧠✨
 
-QuizBee is a fun and engaging quiz platform designed to make learning interactive and enjoyable. Whether you're a student, educator, or lifelong learner, QuizBee combines quizzes, gamification, and multimedia to help you test your knowledge, track progress, and compete with others.
+QuizPlay is a fun and engaging quiz platform designed to make learning interactive and enjoyable. Whether you're a student, educator, or lifelong learner, QuizBee combines quizzes, gamification, and multimedia to help you test your knowledge, track progress, and compete with others.
 
 Features 🛠️
 1. Quiz Playback 🎥📝
@@ -44,7 +44,7 @@ Enjoy a dynamic and user-friendly interface.
 
 Track progress and receive real-time feedback.
 
-Why QuizBee? 🤔
+Why QuizPlay? 🤔
 For Users
 Engaging Learning: Turn passive watching into active participation.
 
